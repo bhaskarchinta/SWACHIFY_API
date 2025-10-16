@@ -16,4 +16,31 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("getallusers")]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        return Ok(await userService.GetAllUsersAsync());
+    }
+
+    [HttpGet("getuserbyid")]
+    public async Task<IActionResult> GetUserByID(long id)
+    {
+        return Ok(await userService.GetUserByID(id));
+    }
+
+
+    [HttpGet("getallusersByDept")]
+    public async Task<IActionResult> GetAllUsersByDept(long deptId)
+    {
+        return Ok(await userService.GetAllUsersByDept(deptId));
+    }
+
+    [HttpPost("createemployee")]
+    public async Task<IActionResult> CreateEmployee(EmpCommandDto empCommandDto)
+    {
+        var result = await userService.CreateEmployeAsync(empCommandDto);
+        if (result == null) return Forbid();
+        return Ok(result);
+    }
+
 }

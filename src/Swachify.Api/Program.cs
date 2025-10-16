@@ -26,6 +26,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICleaningService, CleaningService>();
+builder.Services.AddScoped<IMasterService, MasterService>();
 
 var app = builder.Build();
 
