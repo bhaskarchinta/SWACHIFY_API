@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Swachify.Infrastructure.Models;
 
-public class master_location
+public partial class master_location
 {
     public long id { get; set; }
 

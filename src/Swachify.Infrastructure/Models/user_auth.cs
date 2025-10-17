@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Swachify.Infrastructure.Models;
 
-public class user_auth
+public partial class user_auth
 {
     public long id { get; set; }
 

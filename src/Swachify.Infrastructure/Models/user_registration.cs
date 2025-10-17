@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Swachify.Infrastructure.Models;
 
-public class user_registration
+public partial class user_registration
 {
     public long id { get; set; }
 
@@ -37,6 +37,8 @@ public class user_registration
 
     public long? location_id { get; set; }
 
+    public long? service_id { get; set; }
+
     public virtual ICollection<customer_complaint> customer_complaintcreated_byNavigations { get; set; } = new List<customer_complaint>();
 
     public virtual ICollection<customer_complaint> customer_complaintmodified_byNavigations { get; set; } = new List<customer_complaint>();
@@ -50,6 +52,8 @@ public class user_registration
     public virtual master_location? location { get; set; }
 
     public virtual master_role? role { get; set; }
+
+    public virtual master_service? service { get; set; }
 
     public virtual ICollection<service_booking> service_bookingcreated_byNavigations { get; set; } = new List<service_booking>();
 

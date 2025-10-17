@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Swachify.Infrastructure.Models;
 
-public class master_gender
+public partial class master_gender
 {
     public int id { get; set; }
 

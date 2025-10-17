@@ -5,29 +5,42 @@ using Swachify.Infrastructure.Models;
 
 namespace Swachify.Infrastructure.Data;
 
-public class MyDbContext(DbContextOptions<MyDbContext> options) : DbContext(options)
+public partial class MyDbContext : DbContext
 {
-    public DbSet<customer_complaint> customer_complaints { get; set; }
+    public MyDbContext()
+    {
+    }
 
-    public DbSet<master_department> master_departments { get; set; }
+    public MyDbContext(DbContextOptions<MyDbContext> options)
+        : base(options)
+    {
+    }
 
-    public DbSet<master_gender> master_genders { get; set; }
+    public virtual DbSet<customer_complaint> customer_complaints { get; set; }
 
-    public DbSet<master_location> master_locations { get; set; }
+    public virtual DbSet<master_department> master_departments { get; set; }
 
-    public DbSet<master_role> master_roles { get; set; }
+    public virtual DbSet<master_gender> master_genders { get; set; }
 
-    public DbSet<master_service> master_services { get; set; }
+    public virtual DbSet<master_location> master_locations { get; set; }
 
-    public DbSet<master_service_mapping> master_service_mappings { get; set; }
+    public virtual DbSet<master_role> master_roles { get; set; }
 
-    public DbSet<master_slot> master_slots { get; set; }
+    public virtual DbSet<master_service> master_services { get; set; }
 
-    public DbSet<service_booking> service_bookings { get; set; }
+    public virtual DbSet<master_service_mapping> master_service_mappings { get; set; }
 
-    public DbSet<user_auth> user_auths { get; set; }
+    public virtual DbSet<master_slot> master_slots { get; set; }
 
-    public DbSet<user_registration> user_registrations { get; set; }
+    public virtual DbSet<service_booking> service_bookings { get; set; }
+
+    public virtual DbSet<user_auth> user_auths { get; set; }
+
+    public virtual DbSet<user_registration> user_registrations { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseNpgsql("Host=127.0.0.1;Port=5432;Database=swachify_dev;Username=bhaskarchinta\n");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -118,7 +131,10 @@ public class MyDbContext(DbContextOptions<MyDbContext> options) : DbContext(opti
             entity.HasIndex(e => e.service_name, "uk_master_service_service_name").IsUnique();
 
             entity.Property(e => e.is_active).HasDefaultValue(true);
+            entity.Property(e => e.premium).HasPrecision(10, 2);
+            entity.Property(e => e.regular).HasPrecision(10, 2);
             entity.Property(e => e.service_name).HasMaxLength(255);
+            entity.Property(e => e.ultimate).HasPrecision(10, 2);
         });
 
         modelBuilder.Entity<master_service_mapping>(entity =>
@@ -249,7 +265,15 @@ public class MyDbContext(DbContextOptions<MyDbContext> options) : DbContext(opti
             entity.HasOne(d => d.role).WithMany(p => p.user_registrations)
                 .HasForeignKey(d => d.role_id)
                 .HasConstraintName("fk_user_registration_role_id");
+
+            entity.HasOne(d => d.service).WithMany(p => p.user_registrations)
+                .HasForeignKey(d => d.service_id)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_user_registration_service_id");
         });
-        base.OnModelCreating(modelBuilder);
+
+        OnModelCreatingPartial(modelBuilder);
     }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

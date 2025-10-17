@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Swachify.Infrastructure.Models;
 
-public class master_slot
+public partial class master_slot
 {
     public int id { get; set; }
 

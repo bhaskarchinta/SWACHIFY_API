@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Swachify.Infrastructure.Models;
 
-public class master_service_mapping
+public partial class master_service_mapping
 {
     public int id { get; set; }
 
