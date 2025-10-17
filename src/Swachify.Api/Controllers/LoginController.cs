@@ -20,7 +20,7 @@ public class LoginController(IAuthService authService) : ControllerBase
             }
             else
             {
-                return Ok("Login Successful");
+                return Ok(data);
             }
         }
         else
