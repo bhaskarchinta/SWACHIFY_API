@@ -21,7 +21,7 @@ public class EmailController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.To))
             return BadRequest("Recipient email is required.");
 
-        // Hardcoded subject and body
+        
         var subject = "Welcome to Swachify!";
         var body = "<h1>Hello and welcome to Swachify!</h1><p>We’re glad to have you on board.</p>";
 
