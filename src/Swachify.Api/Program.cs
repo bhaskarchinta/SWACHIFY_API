@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Swachify.Infrastructure.Data;
 using Swachify.Application;
 using Microsoft.AspNetCore.Identity;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +20,11 @@ opt.AddPolicy("spa", p => p
 });
 
 // Add services
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(opts =>
+    {
+        // opts.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; // or IgnoreCycles
+        // opts.JsonSerializerOptions.MaxDepth = 64;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
