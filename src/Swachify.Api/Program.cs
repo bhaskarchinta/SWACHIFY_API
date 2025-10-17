@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Swachify.Infrastructure.Data;
 using Swachify.Application;
 using Microsoft.AspNetCore.Identity;
+using Swachify.Application.Interfaces;
+using Swachify.Application.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,7 +28,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 
 var app = builder.Build();
