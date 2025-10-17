@@ -3,39 +3,41 @@ name: Deploy .NET Web App to Azure App Service
 on:
   push:
     branches:
-      - main  # or your deployment branch
+      - main   # Deploy whenever you push to main
+  workflow_dispatch:  # Allow manual trigger from GitHub UI
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
-      - name: Checkout repository
+      # 1️⃣ Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Setup .NET
+      # 2️⃣ Setup .NET SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'  # or your target framework version
+          dotnet-version: '8.0.x'  # or your actual target version
 
-      # Step 3: Restore dependencies
+      # 3️⃣ Restore dependencies
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ./src/Swachify.Api/Swachify.Api.csproj  # ✅ specify your project path
 
-      # Step 4: Build the project
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
+      # 4️⃣ Build project
+      - name: Build project
+        run: dotnet build ./src/Swachify.Api/Swachify.Api.csproj --configuration Release --no-restore
 
-      # Step 5: Publish the app
-      - name: Publish app
-        run: dotnet publish --configuration Release --output ./publish
+      - name: Publish project
+        run: dotnet publish ./src/Swachify.Api/Swachify.Api.csproj --configuration Release --output ./publish
 
-      # Step 6: Deploy to Azure App Service
+
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'SCSBEAPI'  # 👈 your Azure App Service name
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}  # 👈 secret name
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
           package: ./publish
+
+     
