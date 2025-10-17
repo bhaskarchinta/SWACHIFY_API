@@ -18,7 +18,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '8.0.0'
 
       # Step 3: Restore dependencies
       - name: Restore dependencies
@@ -38,4 +38,4 @@ jobs:
         with:
           app-name: 'SCSBEAPI'  # 👈 your Azure App Service name
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}  # 👈 your GitHub secret
-          package: ./publish
+          package: ./publish/bin
