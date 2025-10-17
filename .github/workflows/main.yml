@@ -1,0 +1,45 @@
+name: Deploy .NET API to Azure App Service (POC)
+
+on:
+  push:
+    branches:
+      - main  # deploy only when pushing to main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # Step 3: Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore ./src/Swachify.Api/Swachify.Api.csproj
+
+      # Step 4: Build the project
+      - name: Build project
+        run: dotnet build ./src/Swachify.Api/Swachify.Api.csproj --configuration Release --no-restore
+
+      # Step 5: Publish to a local folder
+      - name: Publish project
+        run: dotnet publish ./src/Swachify.Api/Swachify.Api.csproj --configuration Release --output ./publish
+
+      # Step 6: Debug - confirm publish contents
+      - name: Show publish folder contents
+        run: ls -R ./publish
+
+      # Step 7: Deploy to Azure App Service
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'SWACHIFYDEMO'  # 👈 your Azure App Service name
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          package: ./publish
