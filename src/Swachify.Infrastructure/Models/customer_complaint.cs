@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Swachify.Infrastructure.Models;
 
-public class customer_complaint
+public partial class customer_complaint
 {
     public long id { get; set; }
 

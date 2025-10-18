@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Swachify.Infrastructure.Models;
 
-public class service_booking
+public partial class service_booking
 {
     public long id { get; set; }
 
@@ -13,7 +13,7 @@ public class service_booking
 
     public long service_id { get; set; }
 
-    public int slot_id { get; set; }
+    public long slot_id { get; set; }
 
     public long? created_by { get; set; }
 
@@ -24,6 +24,8 @@ public class service_booking
     public DateTime? modified_date { get; set; }
 
     public bool? is_active { get; set; }
+
+    public DateOnly? preferred_date { get; set; }
 
     public virtual user_registration? created_byNavigation { get; set; }
 

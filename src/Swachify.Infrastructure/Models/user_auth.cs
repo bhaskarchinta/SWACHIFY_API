@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Swachify.Infrastructure.Models;
 
-public class user_auth
+public partial class user_auth
 {
     public long id { get; set; }
 
     public long user_id { get; set; }
 
-    public string login_name { get; set; } = null!;
+    public string email { get; set; } = null!;
 
     public string password { get; set; } = null!;
 

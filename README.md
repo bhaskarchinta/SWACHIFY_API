@@ -14,7 +14,7 @@ dotnet add package Dapper                       # lightweight high-perf reads (o
 dotnet add package Microsoft.Extensions.Caching.StackExchangeRedis  # if using Redis cache
 
 
-dotnet ef dbcontext scaffold "Host=127.0.0.1;Port=5432;Database=swachify_dev;Username=bhaskarchinta
+dotnet ef dbcontext scaffold "Host=13.211.191.251;Port=5432;Database=swachify_dev;Username=postgres;Password=admin@123
 " \
   Npgsql.EntityFrameworkCore.PostgreSQL \
   --output-dir Models --context-dir Data --context MyDbContext \
