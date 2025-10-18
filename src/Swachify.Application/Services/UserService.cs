@@ -65,6 +65,7 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
             first_name = cmd.first_name,
             last_name = cmd.last_name,
             mobile = cmd.mobile,
+            role_id = 3
         };
         await db.user_registrations.AddAsync(user);
         long user_auth_id = await db.user_auths.MaxAsync(u => (long?)u.id) ?? 0L;
