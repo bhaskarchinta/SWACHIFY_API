@@ -3,13 +3,11 @@ using System.Collections.Generic;
 
 namespace Swachify.Infrastructure.Models;
 
-public class master_location
+public partial class master_location
 {
     public long id { get; set; }
 
-    public string country_name { get; set; } = null!;
-
-    public string state_name { get; set; } = null!;
+    public string location_name { get; set; } = null!;
 
     public bool? is_active { get; set; }
 

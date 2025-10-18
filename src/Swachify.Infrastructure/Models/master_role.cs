@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Swachify.Infrastructure.Models;
 
-public class master_role
+public partial class master_role
 {
-    public int id { get; set; }
+    public long id { get; set; }
 
     public string role_name { get; set; } = null!;
 

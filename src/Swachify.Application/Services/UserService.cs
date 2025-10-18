@@ -20,7 +20,6 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
             first_name = cmd.first_name,
             last_name = cmd.last_name,
             mobile = cmd.mobile,
-            password = hasher.Hash(cmd.password)
         };
         await db.user_registrations.AddAsync(user);
         long user_auth_id = await db.user_auths.MaxAsync(u => (long?)u.id) ?? 0L;
@@ -28,7 +27,7 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
         {
             id = user_auth_id + 1,
             user_id = user.id,
-            login_name = cmd.email,
+            email = cmd.email,
             password = hasher.Hash(cmd.password)
         };
         await db.user_auths.AddAsync(user_auth);
@@ -39,10 +38,6 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
     public async Task<List<user_registration>> GetAllUsersAsync()
     {
         var result = await db.user_registrations?.ToListAsync();
-        if (result?.Count > 0)
-        {
-        result?.ForEach(d => d.password = "*******");
-        }
         return result;
     }
 
@@ -54,10 +49,6 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
     public async Task<user_registration> GetUserByID(long id)
     {
         var user = await db.user_registrations?.FirstOrDefaultAsync(d => d.id == id);
-        if (user != null)
-        {
-            user.password = "******";
-        }
         return user;
     }
 
@@ -74,7 +65,6 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
             first_name = cmd.first_name,
             last_name = cmd.last_name,
             mobile = cmd.mobile,
-            password = hasher.Hash("Indian@123"),
         };
         await db.user_registrations.AddAsync(user);
         long user_auth_id = await db.user_auths.MaxAsync(u => (long?)u.id) ?? 0L;
@@ -82,7 +72,7 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
         {
             id = user_auth_id + 1,
             user_id = user.id,
-            login_name = cmd.email,
+            email = cmd.email,
             password = hasher.Hash("Indian@123")
         };
         await db.user_auths.AddAsync(user_auth);

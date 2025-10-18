@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Swachify.Infrastructure.Models;
 
-public class master_slot
+public partial class master_slot
 {
-    public int id { get; set; }
+    public long id { get; set; }
 
     public string slot_time { get; set; } = null!;
 
