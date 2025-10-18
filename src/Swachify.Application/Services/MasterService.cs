@@ -16,9 +16,19 @@ public class MasterService(MyDbContext db) : IMasterService
         return await db.master_services.ToListAsync();
     }
 
+    public async Task<List<master_department>> GetAllDepartmentsAsync()
+    {
+        return await db.master_departments.ToListAsync();
+    }
+
     public async Task<List<master_role>> GetAllRolesAsync()
     {
         return await db.master_roles.ToListAsync();
+    }
+
+     public async Task<List<master_slot>> GetAllSlots()
+    {
+        return await db.master_slots.ToListAsync();
     }
 
 }
