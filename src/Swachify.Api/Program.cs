@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Swachify.Application.Interfaces;
 using Swachify.Application.Services;
 using System.Text.Json.Serialization;
+using Swachify.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,13 @@ builder.Services.AddControllers().AddJsonOptions(opts =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<IOtpService>(sp =>
+    new TwilioOtpService(
+        Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID"),
+        Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN"),
+        Environment.GetEnvironmentVariable("TWILIO_VERIFY_SERVICE_SID")
+    )
+);
 
 // Register application services
 builder.Services.AddScoped<IUserService, UserService>();
