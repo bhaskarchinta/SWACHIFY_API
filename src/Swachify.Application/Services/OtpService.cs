@@ -1,4 +1,5 @@
-﻿using Swachify.Application.Interfaces;
+﻿using Microsoft.Extensions.Configuration;
+using Swachify.Application.Interfaces;
 using Twilio;
 using Twilio.Rest.Verify.V2.Service;
 
@@ -10,11 +11,11 @@ public class OtpService : IOtpService
     private readonly string _authToken;
     private readonly string _verifyServiceSid;
 
-    public OtpService(string accountSid, string authToken, string verifyServiceSid)
+    public OtpService(IConfiguration configuration)
     {
-        _accountSid = accountSid;
-        _authToken = authToken;
-        _verifyServiceSid = verifyServiceSid;
+        _accountSid = configuration["Twilio:AccountSid"];
+        _authToken = configuration["Twilio:AuthToken"];
+        _verifyServiceSid = configuration["Twilio:VerifyServiceSid"];
         TwilioClient.Init(_accountSid, _authToken);
     }
 

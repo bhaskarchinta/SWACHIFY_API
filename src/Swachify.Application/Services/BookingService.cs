@@ -10,50 +10,54 @@ using System.Threading.Tasks;
 
 namespace Swachify.Application.Services
 {
-    public class BookingService : IBookingService
+  public class BookingService : IBookingService
+  {
+    private readonly MyDbContext _db;
+    private readonly IEmailService _emailService;
+
+    public BookingService(MyDbContext db, IEmailService emailService)
     {
-        private readonly MyDbContext _db;
-        private readonly IEmailService _emailService;
+      _db = db;
+      _emailService = emailService;
+    }
 
-        public BookingService(MyDbContext db, IEmailService emailService)
-        {
-            _db = db;
-            _emailService = emailService;
-        }
+    public async Task<List<service_booking>> GetAllAsync(CancellationToken ct = default)
+    {
+      return await _db.service_bookings
+          .Include(b => b.dept)
+          .Include(b => b.service)
+          .Include(b => b.slot)
+          .OrderByDescending(b => b.created_date)
+          .ToListAsync(ct);
+    }
 
-        public async Task<List<service_booking>> GetAllAsync(CancellationToken ct = default)
-        {
-            return await _db.service_bookings
-                .Include(b => b.dept)
-                .Include(b => b.service)
-                .Include(b => b.slot)
-                .OrderByDescending(b => b.created_date)
-                .ToListAsync(ct);
-        }
+    public async Task<service_booking?> GetByIdAsync(long id, CancellationToken ct = default)
+    {
+      return await _db.service_bookings
+          .Include(b => b.dept)
+          .Include(b => b.service)
+          .Include(b => b.slot)
+          .FirstOrDefaultAsync(b => b.id == id, ct);
+    }
 
-        public async Task<service_booking?> GetByIdAsync(long id, CancellationToken ct = default)
-        {
-            return await _db.service_bookings
-                .Include(b => b.dept)
-                .Include(b => b.service)
-                .Include(b => b.slot)
-                .FirstOrDefaultAsync(b => b.id == id, ct);
-        }
+    public async Task<long> CreateAsync(service_booking booking, CancellationToken ct = default)
+    {
+      booking.created_date = DateTime.Now;
+      booking.modified_date = DateTime.Now;
+      booking.is_active = true;
+      booking.booking_id ??= Guid.NewGuid().ToString();
+      booking.full_name = booking.full_name;
+      booking.address = booking.address;
+      booking.phone = booking.phone;
+      booking.email = booking.email;
+      booking.status_id = booking.status_id;
+      _db.service_bookings.Add(booking);
+      await _db.SaveChangesAsync(ct);
+      if (!string.IsNullOrEmpty(booking.email))
+      {
+        var subject = $"Thank You for Choosing Swachify Cleaning Service!";
 
-        public async Task<long> CreateAsync(service_booking booking, CancellationToken ct = default)
-        {
-            booking.created_date = DateTime.Now;
-            booking.modified_date = DateTime.Now;
-            booking.is_active = true;
-            booking.booking_id ??= Guid.NewGuid().ToString();
-
-            _db.service_bookings.Add(booking);
-            await _db.SaveChangesAsync(ct);
-            if (!string.IsNullOrEmpty(booking.email))
-            {
-                var subject = $"Thank You for Choosing Swachify Cleaning Service!";
-
-                var body = $@"
+        var body = $@"
 <!DOCTYPE html>
 <html lang=""en"">
   <head>
@@ -117,37 +121,41 @@ namespace Swachify.Application.Services
 </html>";
 
 
-                await _emailService.SendEmailAsync(booking.email, subject, body);
-            }
+        await _emailService.SendEmailAsync(booking.email, subject, body);
+      }
 
-            return booking.id;
-        }
-
-        public async Task<bool> UpdateAsync(long id, service_booking updatedBooking, CancellationToken ct = default)
-        {
-            var existing = await _db.service_bookings.FirstOrDefaultAsync(b => b.id == id, ct);
-            if (existing == null) return false;
-
-            existing.dept_id = updatedBooking.dept_id;
-            existing.service_id = updatedBooking.service_id;
-            existing.slot_id = updatedBooking.slot_id;
-            existing.modified_by = updatedBooking.modified_by;
-            existing.modified_date = DateTime.UtcNow;
-            existing.preferred_date = updatedBooking.preferred_date;
-            existing.is_active = updatedBooking.is_active;
-
-            await _db.SaveChangesAsync(ct);
-            return true;
-        }
-
-        public async Task<bool> DeleteAsync(long id, CancellationToken ct = default)
-        {
-            var booking = await _db.service_bookings.FirstOrDefaultAsync(b => b.id == id, ct);
-            if (booking == null) return false;
-
-            _db.service_bookings.Remove(booking);
-            await _db.SaveChangesAsync(ct);
-            return true;
-        }
+      return booking.id;
     }
+
+    public async Task<bool> UpdateAsync(long id, service_booking updatedBooking, CancellationToken ct = default)
+    {
+      var existing = await _db.service_bookings.FirstOrDefaultAsync(b => b.id == id, ct);
+      if (existing == null) return false;
+
+      existing.dept_id = updatedBooking.dept_id;
+      existing.service_id = updatedBooking.service_id;
+      existing.slot_id = updatedBooking.slot_id;
+      existing.modified_by = updatedBooking.modified_by;
+      existing.modified_date = DateTime.UtcNow;
+      existing.preferred_date = updatedBooking.preferred_date;
+      existing.is_active = updatedBooking.is_active;
+      existing.full_name = updatedBooking.full_name;
+      existing.address = updatedBooking.address;
+      existing.phone = updatedBooking.phone;
+      existing.email = updatedBooking.email;
+      existing.status_id = updatedBooking.status_id;
+      await _db.SaveChangesAsync(ct);
+      return true;
+    }
+
+    public async Task<bool> DeleteAsync(long id, CancellationToken ct = default)
+    {
+      var booking = await _db.service_bookings.FirstOrDefaultAsync(b => b.id == id, ct);
+      if (booking == null) return false;
+
+      _db.service_bookings.Remove(booking);
+      await _db.SaveChangesAsync(ct);
+      return true;
+    }
+  }
 }
