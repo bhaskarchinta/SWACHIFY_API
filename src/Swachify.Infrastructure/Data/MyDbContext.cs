@@ -32,6 +32,8 @@ public partial class MyDbContext : DbContext
 
     public virtual DbSet<master_slot> master_slots { get; set; }
 
+    public virtual DbSet<otp_history> otp_histories { get; set; }
+
     public virtual DbSet<service_booking> service_bookings { get; set; }
 
     public virtual DbSet<user_auth> user_auths { get; set; }
@@ -163,6 +165,32 @@ public partial class MyDbContext : DbContext
 
             entity.Property(e => e.is_active).HasDefaultValue(true);
             entity.Property(e => e.slot_time).HasMaxLength(255);
+        });
+
+        modelBuilder.Entity<otp_history>(entity =>
+        {
+            entity.HasKey(e => e.id).HasName("pk_otp_history_id");
+
+            entity.ToTable("otp_history");
+
+            entity.Property(e => e.created_date)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone");
+            entity.Property(e => e.is_active).HasDefaultValue(true);
+            entity.Property(e => e.modified_date).HasColumnType("timestamp without time zone");
+
+            entity.HasOne(d => d.created_byNavigation).WithMany(p => p.otp_historycreated_byNavigations)
+                .HasForeignKey(d => d.created_by)
+                .HasConstraintName("fk_otp_history_created_by");
+
+            entity.HasOne(d => d.modified_byNavigation).WithMany(p => p.otp_historymodified_byNavigations)
+                .HasForeignKey(d => d.modified_by)
+                .HasConstraintName("fk_otp_history_modified_by");
+
+            entity.HasOne(d => d.user).WithMany(p => p.otp_historyusers)
+                .HasForeignKey(d => d.user_id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_otp_history_user_id");
         });
 
         modelBuilder.Entity<service_booking>(entity =>

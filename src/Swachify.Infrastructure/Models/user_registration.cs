@@ -49,6 +49,12 @@ public partial class user_registration
 
     public virtual master_location? location { get; set; }
 
+    public virtual ICollection<otp_history> otp_historycreated_byNavigations { get; set; } = new List<otp_history>();
+
+    public virtual ICollection<otp_history> otp_historymodified_byNavigations { get; set; } = new List<otp_history>();
+
+    public virtual ICollection<otp_history> otp_historyusers { get; set; } = new List<otp_history>();
+
     public virtual master_role? role { get; set; }
 
     public virtual master_service? service { get; set; }
