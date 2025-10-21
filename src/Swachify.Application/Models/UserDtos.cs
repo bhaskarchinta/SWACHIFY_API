@@ -8,7 +8,8 @@ public record UserCommandDto
     string last_name,
     string email,
     string mobile,
-    string password
+    string password,
+    long role_id
 );
 
 public record EmpCommandDto
