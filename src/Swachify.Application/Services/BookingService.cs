@@ -13,10 +13,12 @@ namespace Swachify.Application.Services
     public class BookingService : IBookingService
     {
         private readonly MyDbContext _db;
+        private readonly IEmailService _emailService;
 
-        public BookingService(MyDbContext db)
+        public BookingService(MyDbContext db, IEmailService emailService)
         {
             _db = db;
+            _emailService = emailService;
         }
 
         public async Task<List<service_booking>> GetAllAsync(CancellationToken ct = default)
@@ -47,6 +49,77 @@ namespace Swachify.Application.Services
 
             _db.service_bookings.Add(booking);
             await _db.SaveChangesAsync(ct);
+            if (!string.IsNullOrEmpty(booking.email))
+            {
+                var subject = $"Thank You for Choosing Swachify Cleaning Service!";
+
+                var body = $@"
+<!DOCTYPE html>
+<html lang=""en"">
+  <head>
+    <meta charset=""UTF-8"" />
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />
+    <title>Booking Confirmation - Swachify</title>
+  </head>
+  <body style=""margin:0; padding:0; background-color:#EDFDFE; font-family:Segoe UI, Arial, sans-serif;"">
+    <table align=""center"" cellpadding=""0"" cellspacing=""0"" width=""600"" 
+           style=""background-color:#ffffff; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.08);"">
+      
+      <!-- Header -->
+      <tr>
+        <td align=""center"" bgcolor=""#16A34A"" 
+            style=""padding:20px 0; border-top-left-radius:10px; border-top-right-radius:10px;"">
+          <h1 style=""color:#ffffff; font-size:26px; margin:0;"">Thank You for Choosing Swachify!</h1>
+        </td>
+      </tr>
+
+      <!-- Body -->
+      <tr>
+        <td style=""padding:30px 40px; color:#333333; font-size:16px; line-height:1.7;"">
+          <p>Dear <strong>{booking.full_name ?? "Customer"}</strong>,</p>
+
+          <p>Thank you for choosing <strong style=""color:#16A34A;"">Swachify Cleaning Service</strong>!</p>
+
+          <p>We’ve received your booking request for the service 
+             <strong style=""color:#16A34A;"">{booking.service?.service_name ?? "Selected Service"}</strong>.</p>
+
+          <p>Our team will assign an agent to your service shortly and confirm your service details soon.</p>
+
+          <p>If you have any questions, feel free to contact us at 
+            <a href=""mailto:support@swachify.com"" style=""color:#16A34A; text-decoration:none;"">support@swachify.com</a> 
+            or call us at <strong>+91 98765 43210</strong>.
+          </p>
+
+          <p>Warm regards,<br>
+          <strong>Team Swachify</strong><br>
+          <em>“Making Spaces Shine, Every Time!”</em></p>
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <tr>
+        <td align=""center"" bgcolor=""#F7FDFD"" 
+            style=""padding:20px; font-size:14px; color:#777777; border-bottom-left-radius:10px; border-bottom-right-radius:10px;"">
+          &copy; 2025 Swachify. All rights reserved.
+        </td>
+      </tr>
+
+      <tr>
+        <td align=""center"" bgcolor=""#F3F4F6"" 
+            style=""padding:15px; border-bottom-left-radius:10px; border-bottom-right-radius:10px;"">
+          <a href=""https://swachify.com"" 
+             style=""color:#2563EB; text-decoration:none; font-weight:bold;"">Visit Our Website</a>
+        </td>
+      </tr>
+
+    </table>
+  </body>
+</html>";
+
+
+                await _emailService.SendEmailAsync(booking.email, subject, body);
+            }
+
             return booking.id;
         }
 

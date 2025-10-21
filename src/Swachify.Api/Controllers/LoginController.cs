@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Swachify.Application;
 using Swachify.Application.DTOs;
+using Swachify.Application.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 namespace Swachify.Api;
 
 [ApiController]
@@ -29,4 +30,19 @@ public class LoginController(IAuthService authService) : ControllerBase
             return Unauthorized("Invalid username or password");
         }
     }
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
+    {
+        var result = await authService.ForgotPasswordAsync(
+            request.Email,
+            request.Password,
+            request.ConfirmPassword
+        );
+
+        if (result == "Password updated successfully.")
+            return Ok(new { message = result });
+
+        return BadRequest(new { message = result });
+    }
+
 }
