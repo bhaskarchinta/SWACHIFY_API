@@ -20,6 +20,7 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
             first_name = cmd.first_name,
             last_name = cmd.last_name,
             mobile = cmd.mobile,
+            role_id= cmd.role_id
         };
         await db.user_registrations.AddAsync(user);
         long user_auth_id = await db.user_auths.MaxAsync(u => (long?)u.id) ?? 0L;
@@ -38,7 +39,7 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
     public async Task<List<user_registration>> GetAllUsersAsync()
     {
         var result = await db.user_registrations?.ToListAsync();
-        return result;
+        return result ?? new List<user_registration>();
     }
 
     public async Task<List<user_registration>> GetAllUsersByDept(long deptId)
@@ -49,7 +50,7 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
     public async Task<user_registration> GetUserByID(long id)
     {
         var user = await db.user_registrations?.FirstOrDefaultAsync(d => d.id == id);
-        return user;
+        return user ?? new user_registration();
     }
 
     public async Task<long> CreateEmployeAsync(EmpCommandDto cmd, CancellationToken ct = default)

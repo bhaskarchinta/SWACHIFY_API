@@ -48,7 +48,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICleaningService, CleaningService>();
 builder.Services.AddScoped<IMasterService, MasterService>();
-
+builder.Services.AddScoped<IBookingService, BookingService>();
 var app = builder.Build();
 
 app.UseSwagger();
