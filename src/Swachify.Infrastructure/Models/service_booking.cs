@@ -37,6 +37,8 @@ public partial class service_booking
 
     public long? status_id { get; set; }
 
+    public long? assign_to { get; set; }
+
     public virtual user_registration? created_byNavigation { get; set; }
 
     public virtual master_department dept { get; set; } = null!;

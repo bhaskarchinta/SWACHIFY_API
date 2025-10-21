@@ -43,4 +43,13 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("assignemployee")]
+    public async Task<IActionResult> AssignEmployee(AssignEmpDto commandDto)
+    {
+        var result = await userService.AssignEmployee(commandDto.id,commandDto.user_id);
+        if (result == null) return Forbid();
+        return Ok(result);
+    }
+
+
 }
