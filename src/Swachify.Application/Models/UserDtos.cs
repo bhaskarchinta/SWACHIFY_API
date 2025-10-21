@@ -18,9 +18,9 @@ public record EmpCommandDto
     string last_name,
     string email,
     string mobile,
-    string location_id,
+    long location_id,
     List<long> dept_id,
-    string role_id
+    long role_id
 );
 
 public record CustomerOTPDto(long otp, long user_id);
