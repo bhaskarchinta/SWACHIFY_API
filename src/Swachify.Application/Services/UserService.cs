@@ -61,7 +61,8 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
             email = u.email,
             first_name = u.first_name,
             gender_id = u.gender_id,
-            is_active=u.is_active,
+            is_active = u.is_active,
+            location_id = u.location_id,
             depts = grouped.TryGetValue(u.id, out var list) ? list : new List<string>()
         }).ToList();
         return allUsers ?? new List<AllUserDtos>();
@@ -75,12 +76,12 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
     public async Task<AllUserDtos> GetUserByID(long id)
     {
         var user = await db.user_registrations?.FirstOrDefaultAsync(d => d.id == id);
-        if(user == null) return new AllUserDtos();
+        if (user == null) return new AllUserDtos();
         var userDept = await (
             from ud in db.user_departments
-            where ud.user_id ==  user.id
+            where ud.user_id == user.id
             join md in db.master_departments on ud.dept_id equals md.id
-            select  md.department_name ).ToListAsync();
+            select md.department_name).ToListAsync();
 
         var userResult = new AllUserDtos
         {
@@ -91,9 +92,10 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
             first_name = user.first_name,
             gender_id = user.gender_id,
             is_active = user.is_active,
-            depts = userDept
+            depts = userDept,
+            location_id = user.location_id
         };
-        
+
         return userResult;
     }
 
@@ -116,7 +118,7 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
 
         cmd.dept_id.ForEach(async d =>
         {
-        long id = await db.user_departments.MaxAsync(u => (long?)u.id) ?? 0L;
+            long id = await db.user_departments.MaxAsync(u => (long?)u.id) ?? 0L;
 
             var userdept = new user_department
             {
@@ -127,7 +129,7 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
         });
 
         long user_auth_id = await db.user_auths.MaxAsync(u => (long?)u.id) ?? 0L;
-        
+
         var user_auth = new user_auth
         {
             id = user_auth_id + 1,

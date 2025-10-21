@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Swachify.Application;
 using Swachify.Application.DTOs;
-using Swachify.Application.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 namespace Swachify.Api;
 
 [ApiController]
