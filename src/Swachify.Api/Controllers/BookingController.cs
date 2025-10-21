@@ -17,7 +17,7 @@ namespace Swachify.Api.Controllers
         }
 
      
-        [HttpGet("get-all")]
+        [HttpGet("getall")]
         public async Task<ActionResult<IEnumerable<BookingDto>>> GetAll(CancellationToken ct)
         {
             var bookings = await _bookingService.GetAllAsync(ct);

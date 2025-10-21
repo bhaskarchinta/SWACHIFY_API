@@ -68,4 +68,10 @@ public partial class user_registration
     public virtual ICollection<user_auth> user_authmodified_byNavigations { get; set; } = new List<user_auth>();
 
     public virtual ICollection<user_auth> user_authusers { get; set; } = new List<user_auth>();
+
+    public virtual ICollection<user_department> user_departmentcreated_byNavigations { get; set; } = new List<user_department>();
+
+    public virtual ICollection<user_department> user_departmentmodified_byNavigations { get; set; } = new List<user_department>();
+
+    public virtual ICollection<user_department> user_departmentusers { get; set; } = new List<user_department>();
 }

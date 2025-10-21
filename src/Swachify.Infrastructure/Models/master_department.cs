@@ -15,5 +15,7 @@ public partial class master_department
 
     public virtual ICollection<service_booking> service_bookings { get; set; } = new List<service_booking>();
 
+    public virtual ICollection<user_department> user_departments { get; set; } = new List<user_department>();
+
     public virtual ICollection<user_registration> user_registrations { get; set; } = new List<user_registration>();
 }
