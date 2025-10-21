@@ -17,11 +17,11 @@ builder.Services.AddDbContext<MyDbContext>(opt =>
 
 builder.Services.AddCors(opt =>
 {
-    opt.AddPolicy("spa", p => p
-        .WithOrigins("http://localhost:4200", "https://localhost:4200")
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials());
+opt.AddPolicy("spa", p => p
+    .AllowAnyOrigin()
+    .AllowAnyHeader()
+    .AllowAnyMethod());
+      
 });
 
 // Add services
