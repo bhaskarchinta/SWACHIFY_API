@@ -35,6 +35,8 @@ public partial class service_booking
 
     public string? address { get; set; }
 
+    public long? status_id { get; set; }
+
     public virtual user_registration? created_byNavigation { get; set; }
 
     public virtual master_department dept { get; set; } = null!;
@@ -44,4 +46,6 @@ public partial class service_booking
     public virtual master_service service { get; set; } = null!;
 
     public virtual master_slot slot { get; set; } = null!;
+
+    public virtual master_status? status { get; set; }
 }

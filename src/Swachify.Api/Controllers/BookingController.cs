@@ -36,7 +36,9 @@ namespace Swachify.Api.Controllers
                 b.address,
                 b.full_name,
                 b.email,
-                b.phone
+                b.phone,
+                b.status_id
+
             ));
             return Ok(result);
         }
@@ -63,7 +65,9 @@ namespace Swachify.Api.Controllers
                 b.address,
                 b.full_name,
                 b.email,
-                b.phone
+                b.phone,
+
+                b.status_id
 
             );
 
@@ -86,7 +90,8 @@ namespace Swachify.Api.Controllers
                 full_name = dto.full_name,
                 address = dto.address,
                 phone = dto.phone,
-                email = dto.email
+                email = dto.email,
+                status_id=dto.status_id,
             };
 
             var id = await _bookingService.CreateAsync(booking, ct);
@@ -104,7 +109,12 @@ namespace Swachify.Api.Controllers
                 slot_id = dto.SlotId,
                 modified_by = dto.ModifiedBy,
                 preferred_date = dto.PreferredDate,
-                is_active = dto.IsActive
+                is_active = dto.IsActive,
+                full_name = dto.full_name,
+                address = dto.address,
+                phone = dto.phone,
+                email = dto.email,
+                status_id=dto.status_id
             };
 
             var updated = await _bookingService.UpdateAsync(id, booking, ct);

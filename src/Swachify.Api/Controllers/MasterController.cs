@@ -7,7 +7,7 @@ namespace Swachify.Api;
 [Route("api/[controller]")]
 public class MasterController(IMasterService masterService) : ControllerBase
 {
-     [HttpGet("getalldepartments")]
+    [HttpGet("getalldepartments")]
     public async Task<IActionResult> GetAllDepartments()
     {
         return Ok(await masterService.GetAllDepartmentsAsync());
@@ -29,10 +29,16 @@ public class MasterController(IMasterService masterService) : ControllerBase
     {
         return Ok(await masterService.GetAllRolesAsync());
     }
-    
-     [HttpGet("getallslots")]
+
+    [HttpGet("getallslots")]
     public async Task<IActionResult> GetAllSlots()
     {
         return Ok(await masterService.GetAllSlots());
+    }
+
+    [HttpGet("getallstatuses")]
+    public async Task<IActionResult> GetAllStatuses()
+    {
+        return Ok(await masterService.GetAllStatuses());
     }
 }
