@@ -8,7 +8,12 @@ namespace Swachify.Application.Interfaces
 {
     public interface IOtpService
     {
-        Task<bool> SendOtpAsync(string phoneNumber);
-        Task<bool> VerifyOtpAsync(string phoneNumber, string code);
+        Task<bool> SendMobileOtpAsync(string phoneNumber);
+        Task<bool> VerifyMobileOtpAsync(string phoneNumber, string code);
+
+        Task<bool> SendCustomerOtpAsync(string phoneNumber);
+
+        Task<bool> VerifyCustomerOtpAsync(string phoneNumber, string code);
+
     }
 }
