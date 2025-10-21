@@ -17,6 +17,12 @@ public partial class master_service
 
     public decimal? ultimate { get; set; }
 
+    public bool? is_regular { get; set; }
+
+    public bool? is_premium { get; set; }
+
+    public bool? is_ultimate { get; set; }
+
     public virtual ICollection<master_service_mapping> master_service_mappings { get; set; } = new List<master_service_mapping>();
 
     public virtual ICollection<service_booking> service_bookings { get; set; } = new List<service_booking>();
