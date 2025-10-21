@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swachify.Application;
+using Swachify.Application.DTOs;
 namespace Swachify.Api;
 
 [ApiController]
@@ -9,11 +10,11 @@ namespace Swachify.Api;
 public class LoginController(IAuthService authService) : ControllerBase
 {
     [HttpPost("login")]
-    public async Task<ActionResult> Login(string email, string password)
+    public async Task<ActionResult> Login(loginDtos req)
     {
-        if (!(string.IsNullOrEmpty(email) && string.IsNullOrEmpty(password)))
+        if (!(string.IsNullOrEmpty(req.email) && string.IsNullOrEmpty(req.password)))
         {
-            var data = await authService.ValidateCredentialsAsync(email, password);
+            var data = await authService.ValidateCredentialsAsync(req.email, req.password);
             if (data == null)
             {
                 return Unauthorized("Invalid username or password");
