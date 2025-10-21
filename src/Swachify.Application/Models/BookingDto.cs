@@ -12,9 +12,11 @@
         DateTime? ModifiedDate,
         bool? IsActive,
         DateOnly? PreferredDate,
-           string? full_name ,
-     string? phone ,
-     string? email ,
-     string? address 
+           string? full_name,
+     string? phone,
+     string? email,
+     string? address,
+
+long? status_id
     );
 }

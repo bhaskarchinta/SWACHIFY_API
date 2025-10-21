@@ -9,4 +9,5 @@ public interface IMasterService
     Task<List<master_role>> GetAllRolesAsync();
     Task<List<master_department>> GetAllDepartmentsAsync();
     Task<List<master_slot>> GetAllSlots();
+    Task<List<master_status>> GetAllStatuses();
 }

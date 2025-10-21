@@ -16,6 +16,8 @@ public partial class MyDbContext : DbContext
     {
     }
 
+    public virtual DbSet<booking_template> booking_templates { get; set; }
+
     public virtual DbSet<customer_complaint> customer_complaints { get; set; }
 
     public virtual DbSet<master_department> master_departments { get; set; }
@@ -31,6 +33,8 @@ public partial class MyDbContext : DbContext
     public virtual DbSet<master_service_mapping> master_service_mappings { get; set; }
 
     public virtual DbSet<master_slot> master_slots { get; set; }
+
+    public virtual DbSet<master_status> master_statuses { get; set; }
 
     public virtual DbSet<otp_history> otp_histories { get; set; }
 
@@ -48,6 +52,22 @@ public partial class MyDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<booking_template>(entity =>
+        {
+            entity.HasKey(e => e.id).HasName("pk_booking_template_id");
+
+            entity.ToTable("booking_template");
+
+            entity.HasIndex(e => e.title, "uk_booking_template_title").IsUnique();
+
+            entity.Property(e => e.created_date)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone");
+            entity.Property(e => e.is_active).HasDefaultValue(true);
+            entity.Property(e => e.modified_date).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.title).HasMaxLength(255);
+        });
+
         modelBuilder.Entity<customer_complaint>(entity =>
         {
             entity.HasKey(e => e.id).HasName("pk_customer_complaints_id");
@@ -169,6 +189,18 @@ public partial class MyDbContext : DbContext
             entity.Property(e => e.slot_time).HasMaxLength(255);
         });
 
+        modelBuilder.Entity<master_status>(entity =>
+        {
+            entity.HasKey(e => e.id).HasName("pk_master_status_id");
+
+            entity.ToTable("master_status");
+
+            entity.HasIndex(e => e.status, "uk_master_status_status").IsUnique();
+
+            entity.Property(e => e.is_active).HasDefaultValue(true);
+            entity.Property(e => e.status).HasMaxLength(255);
+        });
+
         modelBuilder.Entity<otp_history>(entity =>
         {
             entity.HasKey(e => e.id).HasName("pk_otp_history_id");
@@ -234,6 +266,10 @@ public partial class MyDbContext : DbContext
                 .HasForeignKey(d => d.slot_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_service_booking_slot_id");
+
+            entity.HasOne(d => d.status).WithMany(p => p.service_bookings)
+                .HasForeignKey(d => d.status_id)
+                .HasConstraintName("fk_service_booking_status_id");
         });
 
         modelBuilder.Entity<user_auth>(entity =>
