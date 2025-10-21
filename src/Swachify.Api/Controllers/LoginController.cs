@@ -28,4 +28,15 @@ public class LoginController(IAuthService authService) : ControllerBase
             return Unauthorized("Invalid username or password");
         }
     }
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult> ForgotPassword(string email, string password, string confirmPassword)
+    {
+        var result = await authService.ForgotPasswordAsync(email, password, confirmPassword);
+
+        if (result == "Password updated successfully.")
+            return Ok(new { message = result });
+        else
+            return BadRequest(new { message = result });
+    }
+
 }
