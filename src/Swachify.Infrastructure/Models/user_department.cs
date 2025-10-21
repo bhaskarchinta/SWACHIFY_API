@@ -3,17 +3,13 @@ using System.Collections.Generic;
 
 namespace Swachify.Infrastructure.Models;
 
-public partial class service_booking
+public partial class user_department
 {
     public long id { get; set; }
 
-    public string? booking_id { get; set; }
+    public long user_id { get; set; }
 
     public long dept_id { get; set; }
-
-    public long service_id { get; set; }
-
-    public long slot_id { get; set; }
 
     public long? created_by { get; set; }
 
@@ -25,23 +21,11 @@ public partial class service_booking
 
     public bool? is_active { get; set; }
 
-    public DateOnly? preferred_date { get; set; }
-
-    public string? full_name { get; set; }
-
-    public string? phone { get; set; }
-
-    public string? email { get; set; }
-
-    public string? address { get; set; }
-
     public virtual user_registration? created_byNavigation { get; set; }
 
     public virtual master_department dept { get; set; } = null!;
 
     public virtual user_registration? modified_byNavigation { get; set; }
 
-    public virtual master_service service { get; set; } = null!;
-
-    public virtual master_slot slot { get; set; } = null!;
+    public virtual user_registration user { get; set; } = null!;
 }

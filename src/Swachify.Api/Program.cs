@@ -1,14 +1,9 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Swachify.Infrastructure.Data;
 using Swachify.Application;
-using Microsoft.AspNetCore.Identity;
 using Swachify.Application.Interfaces;
 using Swachify.Application.Services;
 using System.Text.Json.Serialization;
-using Swachify.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,14 +22,14 @@ opt.AddPolicy("spa", p => p
 // Add services
 builder.Services.AddControllers().AddJsonOptions(opts =>
 {
-    // opts.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-    // opts.JsonSerializerOptions.MaxDepth = 64;
+     //opts.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+     //opts.JsonSerializerOptions.MaxDepth = 64;
 });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IOtpService>(sp =>
-    new TwilioOtpService(
+    new OtpService(
         Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID"),
         Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN"),
         Environment.GetEnvironmentVariable("TWILIO_VERIFY_SERVICE_SID")

@@ -11,9 +11,9 @@ namespace Swachify.Application.Interfaces
         Task<bool> SendMobileOtpAsync(string phoneNumber);
         Task<bool> VerifyMobileOtpAsync(string phoneNumber, string code);
 
-        Task<bool> SendCustomerOtpAsync(string phoneNumber);
+        Task<bool> SendCustomerOtpAsync(CustomerOTPDto requestOTP);
 
-        Task<bool> VerifyCustomerOtpAsync(string phoneNumber, string code);
+        Task<bool> VerifyCustomerOtpAsync(CustomerOTPDto requestOTP);
 
     }
 }
