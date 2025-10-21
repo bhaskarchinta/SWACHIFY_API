@@ -19,7 +19,7 @@ namespace Swachify.Infrastructure.Services
             TwilioClient.Init(_accountSid, _authToken);
         }
 
-        public async Task<bool> SendOtpAsync(string phoneNumber)
+        public async Task<bool> SendMobileOtpAsync(string phoneNumber)
         {
             var verification = await VerificationResource.CreateAsync(
                 to: phoneNumber,
@@ -29,7 +29,7 @@ namespace Swachify.Infrastructure.Services
             return verification.Status == "pending";
         }
 
-        public async Task<bool> VerifyOtpAsync(string phoneNumber, string code)
+        public async Task<bool> VerifyMobileOtpAsync(string phoneNumber, string code)
         {
             var verificationCheck = await VerificationCheckResource.CreateAsync(
                 to: phoneNumber,
@@ -37,6 +37,23 @@ namespace Swachify.Infrastructure.Services
                 pathServiceSid: _verifyServiceSid
             );
             return verificationCheck.Status == "approved";
+        }
+
+        public async Task<bool> SendCustomerOtpAsync(string phoneNumber)
+        {
+            
+            return await SendMobileOtpAsync(phoneNumber);
+        }
+
+        public async Task<bool> VerifyCustomerOtpAsync(string phoneNumber, string code)
+        {
+            
+            return await VerifyMobileOtpAsync(phoneNumber, code);
+        }
+        private string Generate6DigitOtp()
+        {
+            var random = new Random();
+            return random.Next(100000, 999999).ToString();
         }
     }
 }
