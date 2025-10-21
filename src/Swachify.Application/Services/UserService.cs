@@ -112,7 +112,8 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
             first_name = cmd.first_name,
             last_name = cmd.last_name,
             mobile = cmd.mobile,
-            role_id = 3
+            role_id = 3,
+            location_id = cmd.location_id
         };
         await db.user_registrations.AddAsync(user);
 
@@ -126,6 +127,7 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
                 user_id = userid,
                 dept_id = d
             };
+            await db.user_departments.AddAsync(userdept);
         });
 
         long user_auth_id = await db.user_auths.MaxAsync(u => (long?)u.id) ?? 0L;
@@ -144,11 +146,27 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
 
     public async Task<bool> AssignEmployee(long id, long user_id)
     {
-      var existing = await db.service_bookings.FirstOrDefaultAsync(b => b.id == id);
-      if (existing == null) return false;
+        var existing = await db.service_bookings.FirstOrDefaultAsync(b => b.id == id);
+        if (existing == null) return false;
         existing.status_id = 2;
         existing.assign_to = user_id;
-      await db.SaveChangesAsync();
-      return true;
+        await db.SaveChangesAsync();
+        return true;
     }
+
+    public async Task<bool> UpdateUserAsync(long id, EmpCommandDto cmd)
+    {
+        var existing = await db.user_registrations.FirstOrDefaultAsync(b => b.id == id);
+        if (existing == null) return false;
+
+        existing.email = cmd.email;
+        existing.first_name = cmd.first_name;
+        existing.last_name = cmd.last_name;
+        existing.mobile = cmd.mobile;
+        existing.role_id = cmd.role_id;
+        existing.location_id = cmd.location_id;
+        await db.SaveChangesAsync();
+        return true;
+    }
+
 }
