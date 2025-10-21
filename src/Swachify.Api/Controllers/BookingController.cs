@@ -33,12 +33,11 @@ namespace Swachify.Api.Controllers
                 b.modified_date,
                 b.is_active,
                 b.preferred_date,
-                b.address,
                 b.full_name,
-                b.email,
                 b.phone,
+                b.email,
+                b.address,
                 b.status_id
-
             ));
             return Ok(result);
         }
@@ -66,9 +65,7 @@ namespace Swachify.Api.Controllers
                 b.full_name,
                 b.email,
                 b.phone,
-
                 b.status_id
-
             );
 
             return Ok(dto);

@@ -141,4 +141,14 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
         await db.SaveChangesAsync(ct);
         return user.id;
     }
+
+    public async Task<bool> AssignEmployee(long id, long user_id)
+    {
+      var existing = await db.service_bookings.FirstOrDefaultAsync(b => b.id == id);
+      if (existing == null) return false;
+        existing.status_id = 2;
+        existing.assign_to = user_id;
+      await db.SaveChangesAsync();
+      return true;
+    }
 }

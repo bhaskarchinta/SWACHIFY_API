@@ -24,3 +24,5 @@ public record EmpCommandDto
 );
 
 public record CustomerOTPDto(long otp, long user_id);
+
+public record AssignEmpDto(long id,long user_id);
