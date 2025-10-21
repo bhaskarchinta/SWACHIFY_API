@@ -11,6 +11,10 @@
         long? ModifiedBy,
         DateTime? ModifiedDate,
         bool? IsActive,
-        DateOnly? PreferredDate
+        DateOnly? PreferredDate,
+           string? full_name ,
+     string? phone ,
+     string? email ,
+     string? address 
     );
 }
