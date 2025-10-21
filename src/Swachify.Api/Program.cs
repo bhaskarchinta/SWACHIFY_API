@@ -16,7 +16,6 @@ opt.AddPolicy("spa", p => p
     .AllowAnyOrigin()
     .AllowAnyHeader()
     .AllowAnyMethod());
-      
 });
 
 // Add services
@@ -28,13 +27,6 @@ builder.Services.AddControllers().AddJsonOptions(opts =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<IOtpService>(sp =>
-    new OtpService(
-        Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID"),
-        Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN"),
-        Environment.GetEnvironmentVariable("TWILIO_VERIFY_SERVICE_SID")
-    )
-);
 
 // Register application services
 builder.Services.AddScoped<IUserService, UserService>();
@@ -44,6 +36,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICleaningService, CleaningService>();
 builder.Services.AddScoped<IMasterService, MasterService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IOtpService, OtpService>();
 var app = builder.Build();
 
 app.UseSwagger();
