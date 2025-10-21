@@ -38,6 +38,8 @@ public partial class MyDbContext : DbContext
 
     public virtual DbSet<user_auth> user_auths { get; set; }
 
+    public virtual DbSet<user_department> user_departments { get; set; }
+
     public virtual DbSet<user_registration> user_registrations { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -199,12 +201,16 @@ public partial class MyDbContext : DbContext
 
             entity.ToTable("service_booking");
 
+            entity.Property(e => e.address).HasMaxLength(500);
             entity.Property(e => e.booking_id).HasMaxLength(100);
             entity.Property(e => e.created_date)
                 .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone");
+            entity.Property(e => e.email).HasMaxLength(100);
+            entity.Property(e => e.full_name).HasMaxLength(255);
             entity.Property(e => e.is_active).HasDefaultValue(true);
             entity.Property(e => e.modified_date).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.phone).HasMaxLength(15);
 
             entity.HasOne(d => d.created_byNavigation).WithMany(p => p.service_bookingcreated_byNavigations)
                 .HasForeignKey(d => d.created_by)
@@ -256,6 +262,39 @@ public partial class MyDbContext : DbContext
                 .HasForeignKey(d => d.user_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_user_auth_user_id");
+        });
+
+        modelBuilder.Entity<user_department>(entity =>
+        {
+            entity.HasKey(e => e.id).HasName("pk_user_department_id");
+
+            entity.ToTable("user_department");
+
+            entity.HasIndex(e => new { e.dept_id, e.user_id }, "uk_user_department_dept_id_user_id").IsUnique();
+
+            entity.Property(e => e.created_date)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone");
+            entity.Property(e => e.is_active).HasDefaultValue(true);
+            entity.Property(e => e.modified_date).HasColumnType("timestamp without time zone");
+
+            entity.HasOne(d => d.created_byNavigation).WithMany(p => p.user_departmentcreated_byNavigations)
+                .HasForeignKey(d => d.created_by)
+                .HasConstraintName("fk_user_department_created_by");
+
+            entity.HasOne(d => d.dept).WithMany(p => p.user_departments)
+                .HasForeignKey(d => d.dept_id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_user_department_dept_id");
+
+            entity.HasOne(d => d.modified_byNavigation).WithMany(p => p.user_departmentmodified_byNavigations)
+                .HasForeignKey(d => d.modified_by)
+                .HasConstraintName("fk_user_department_modified_by");
+
+            entity.HasOne(d => d.user).WithMany(p => p.user_departmentusers)
+                .HasForeignKey(d => d.user_id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_user_department_user_id");
         });
 
         modelBuilder.Entity<user_registration>(entity =>

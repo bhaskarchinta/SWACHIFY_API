@@ -16,8 +16,8 @@ namespace Swachify.Api.Controllers
             _bookingService = bookingService;
         }
 
-     
-        [HttpGet("get-all")]
+
+        [HttpGet("getall")]
         public async Task<ActionResult<IEnumerable<BookingDto>>> GetAll(CancellationToken ct)
         {
             var bookings = await _bookingService.GetAllAsync(ct);
@@ -32,12 +32,16 @@ namespace Swachify.Api.Controllers
                 b.modified_by,
                 b.modified_date,
                 b.is_active,
-                b.preferred_date
+                b.preferred_date,
+                b.address,
+                b.full_name,
+                b.email,
+                b.phone
             ));
             return Ok(result);
         }
 
-        
+
         [HttpGet("{id:long}")]
         public async Task<ActionResult<BookingDto>> GetById(long id, CancellationToken ct)
         {
@@ -55,13 +59,18 @@ namespace Swachify.Api.Controllers
                 b.modified_by,
                 b.modified_date,
                 b.is_active,
-                b.preferred_date
+                b.preferred_date,
+                b.address,
+                b.full_name,
+                b.email,
+                b.phone
+
             );
 
             return Ok(dto);
         }
 
-       
+
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] BookingDto dto, CancellationToken ct)
         {
@@ -73,14 +82,18 @@ namespace Swachify.Api.Controllers
                 slot_id = dto.SlotId,
                 created_by = dto.CreatedBy,
                 preferred_date = dto.PreferredDate,
-                is_active = dto.IsActive ?? true
+                is_active = dto.IsActive ?? true,
+                full_name = dto.full_name,
+                address = dto.address,
+                phone = dto.phone,
+                email = dto.email
             };
 
             var id = await _bookingService.CreateAsync(booking, ct);
             return CreatedAtAction(nameof(GetById), new { id }, id);
         }
 
-       
+
         [HttpPut("{id:long}")]
         public async Task<ActionResult> Update(long id, [FromBody] BookingDto dto, CancellationToken ct)
         {
@@ -100,7 +113,7 @@ namespace Swachify.Api.Controllers
             return NoContent();
         }
 
-        
+
         [HttpDelete("{id:long}")]
         public async Task<ActionResult> Delete(long id, CancellationToken ct)
         {

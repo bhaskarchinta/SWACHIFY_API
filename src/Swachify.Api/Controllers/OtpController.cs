@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Swachify.Application;
 using Swachify.Application.Interfaces;
 
 namespace Swachify.Api.Controllers
@@ -28,17 +29,17 @@ namespace Swachify.Api.Controllers
             return verified ? Ok("Mobile OTP verified successfully.") : BadRequest("Invalid Mobile OTP.");
         }
         [HttpPost("sendcustomerotp")]
-        public async Task<IActionResult> SendCustomerOtp([FromQuery] string phoneNumber)
+        public async Task<IActionResult> SendCustomerOtp(CustomerOTPDto requestOTP)
         {
-            var sent = await _otpService.SendCustomerOtpAsync(phoneNumber);
+            var sent = await _otpService.SendCustomerOtpAsync(requestOTP);
             return sent ? Ok("Customer OTP sent successfully.") : BadRequest("Failed to send Customer OTP.");
         }
 
         
         [HttpPost("verifycustomerotp")]
-        public async Task<IActionResult> VerifyCustomerOtp([FromQuery] string phoneNumber, [FromQuery] string code)
+        public async Task<IActionResult> VerifyCustomerOtp(CustomerOTPDto requestOTP)
         {
-            var verified = await _otpService.VerifyCustomerOtpAsync(phoneNumber, code);
+            var verified = await _otpService.VerifyCustomerOtpAsync(requestOTP);
             return verified ? Ok("Customer OTP verified successfully.") : BadRequest("Invalid Customer OTP.");
         }
     }
