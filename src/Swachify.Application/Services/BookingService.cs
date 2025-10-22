@@ -103,7 +103,7 @@ namespace Swachify.Application.Services
       booking.address = booking.address;
       booking.phone = booking.phone;
       booking.email = booking.email;
-      booking.status_id = booking.status_id;
+      booking.status_id = 1;
       _db.service_bookings.Add(booking);
       await _db.SaveChangesAsync(ct);
 
