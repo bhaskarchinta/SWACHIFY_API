@@ -1,12 +1,14 @@
+using System.Reflection.Metadata;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Swachify.Application.DTOs;
+using Swachify.Application.Interfaces;
 using Swachify.Infrastructure.Data;
 using Swachify.Infrastructure.Models;
 
 namespace Swachify.Application;
 
-public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
+public class UserService(MyDbContext db, IPasswordHasher hasher,IEmailService email) : IUserService
 {
 
     public async Task<long> CreateUserAsync(UserCommandDto cmd, CancellationToken ct = default)
@@ -183,6 +185,32 @@ public async Task<long> CreateEmployeAsync(EmpCommandDto cmd, CancellationToken 
         existing.status_id = 2;
         existing.assign_to = user_id;
         await db.SaveChangesAsync();
+        var customer = await db.user_registrations.FirstOrDefaultAsync(db => db.id == existing.created_by);
+        var agent = await db.user_registrations.FirstOrDefaultAsync(db => db.id == existing.assign_to);
+        var location = await db.master_locations.FirstOrDefaultAsync(db => db.id == agent.id);
+        var mailtemplate = await db.booking_templates.FirstOrDefaultAsync(b => b.title == AppConstants.CustomerAssignedAgent);
+        string emailBody = mailtemplate.description
+        .Replace("{0}", customer?.first_name +" " + customer?.last_name)
+        .Replace("{1}", agent?.first_name + " " + agent?.last_name)
+        .Replace("{2}", existing?.modified_date.ToString())
+        .Replace("{3}", location?.location_name);
+        if (mailtemplate != null)
+        {
+            await email.SendEmailAsync(customer.email, AppConstants.CustomerAssignedAgent, emailBody);
+        }
+        var agentmailtemplate = await db.booking_templates.FirstOrDefaultAsync(b => b.title == AppConstants.EMPAssignmentMail);
+        string agentEmailBody = agentmailtemplate?.description.ToString()
+         .Replace("{0}",existing?.id.ToString())
+         .Replace("{1}",agent?.first_name + " " + agent?.last_name)
+         .Replace("{2}",existing?.id.ToString())
+         .Replace("{3}",customer?.first_name +" " + customer?.last_name)
+        .Replace("{4}", location?.location_name)
+        .Replace("{5}", existing?.modified_date.ToString());
+
+        if (mailtemplate != null)
+        {
+            await email.SendEmailAsync(customer.email, AppConstants.EMPAssignmentMail, emailBody);
+        }
         return true;
     }
 
