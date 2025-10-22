@@ -18,28 +18,15 @@ namespace Swachify.Api.Controllers
 
 
         [HttpGet("getall")]
-        public async Task<ActionResult<IEnumerable<BookingDto>>> GetAll(CancellationToken ct)
+        public async Task<ActionResult> GetAll(CancellationToken ct)
         {
-            var bookings = await _bookingService.GetAllAsync(ct);
-            var result = bookings.Select(b => new BookingDto(
-                b.id,
-                b.booking_id,
-                b.dept_id,
-                b.service_id,
-                b.slot_id,
-                b.created_by,
-                b.created_date,
-                b.modified_by,
-                b.modified_date,
-                b.is_active,
-                b.preferred_date,
-                b.full_name,
-                b.phone,
-                b.email,
-                b.address,
-                b.status_id
-            ));
-            return Ok(result);
+            return Ok(await _bookingService.GetAllAsync(ct));
+        }
+
+        [HttpGet("getallbookingsbyuserID")]
+        public async Task<ActionResult> getallbookingsbyuserID(long id)
+        {
+            return Ok(await _bookingService.GetAllBookingByUserIDAsync(id));
         }
 
 

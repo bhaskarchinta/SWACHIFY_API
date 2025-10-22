@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Swachify.Application.DTOs;
 using Swachify.Application.Interfaces;
 using Swachify.Infrastructure.Data;
 using Swachify.Infrastructure.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,15 +23,67 @@ namespace Swachify.Application.Services
       _emailService = emailService;
     }
 
-    public async Task<List<service_booking>> GetAllAsync(CancellationToken ct = default)
+    public async Task<List<AllBookingsDtos>> GetAllAsync(CancellationToken ct = default)
     {
-      return await _db.service_bookings
-          .Include(b => b.dept)
-          .Include(b => b.service)
-          .Include(b => b.slot)
-          .OrderByDescending(b => b.created_date)
-          .ToListAsync(ct);
+      var allBookings = await (
+          from b in _db.service_bookings.AsNoTracking()
+          join d in _db.master_departments.AsNoTracking()
+              on b.dept_id equals d.id into deptJoin
+          from department in deptJoin.DefaultIfEmpty()
+
+          join s in _db.master_statuses.AsNoTracking()
+              on b.status_id equals s.id into statusJoin
+          from status in statusJoin.DefaultIfEmpty()
+
+          join u in _db.user_registrations.AsNoTracking()
+              on b.created_by equals u.id into userJoin
+          from user in userJoin.DefaultIfEmpty()
+
+          join assign in _db.user_registrations.AsNoTracking()
+                  on b.assign_to equals assign.id into AssignuserJoin
+          from assignUser in AssignuserJoin.DefaultIfEmpty()
+          select new AllBookingsDtos
+          {
+            id = b.id,
+            booking_id = b.booking_id,
+            address = b.address,
+            assign_to = b.assign_to,
+   assign_to_name = assignUser != null ? assignUser.first_name + " " + assignUser.last_name : null,
+            created_by = b.created_by,
+            created_by_name = user != null ? user.first_name + " " + user.last_name : null,
+            created_date = b.created_date,
+            dept_id = b.dept_id,
+            email = b.email,
+            full_name = b.full_name,
+            is_active = b.is_active,
+            modified_by = b.modified_by,
+            phone = b.phone,
+            status_id = b.status_id,
+            service_id = b.service_id,
+            slot_id = b.slot_id,
+            modified_date = b.modified_date,
+            preferred_date = b.preferred_date,
+
+            department = department == null ? null : new DepartmentDtos
+            {
+              id = department.id,
+              department_name = department.department_name,
+              is_active = department.is_active
+            },
+
+            Status = status == null ? null : new StatusesDtos
+            {
+              id = status.id,
+              status = status.status,
+              is_active = status.is_active
+            }
+          }
+      ).ToListAsync(ct);
+
+      return allBookings;
     }
+
+
 
     public async Task<service_booking?> GetByIdAsync(long id, CancellationToken ct = default)
     {
@@ -156,6 +210,66 @@ namespace Swachify.Application.Services
       _db.service_bookings.Remove(booking);
       await _db.SaveChangesAsync(ct);
       return true;
+    }
+
+    public async Task<List<AllBookingsDtos>> GetAllBookingByUserIDAsync(long userid)
+    {
+      var allBookings = await (
+ from b in _db.service_bookings.AsNoTracking()
+ join d in _db.master_departments.AsNoTracking()
+     on b.dept_id equals d.id into deptJoin
+ from department in deptJoin.DefaultIfEmpty()
+
+ join s in _db.master_statuses.AsNoTracking()
+     on b.status_id equals s.id into statusJoin
+ from status in statusJoin.DefaultIfEmpty()
+
+ join u in _db.user_registrations.AsNoTracking()
+     on b.created_by equals u.id into userJoin
+ from user in userJoin.DefaultIfEmpty()
+
+ join assign in _db.user_registrations.AsNoTracking()
+     on b.assign_to equals assign.id into AssignuserJoin
+ from assignUser in AssignuserJoin.DefaultIfEmpty()
+
+ select new AllBookingsDtos
+ {
+   id = b.id,
+   booking_id = b.booking_id,
+   address = b.address,
+   assign_to = b.assign_to,
+   assign_to_name = assignUser != null ? assignUser.first_name + " " + assignUser.last_name : null,
+   created_by = b.created_by,
+   created_by_name = user != null ? user.first_name + " " + user.last_name : null,
+   created_date = b.created_date,
+   dept_id = b.dept_id,
+   email = b.email,
+   full_name = b.full_name,
+   is_active = b.is_active,
+   modified_by = b.modified_by,
+   phone = b.phone,
+   status_id = b.status_id,
+   service_id = b.service_id,
+   slot_id = b.slot_id,
+   modified_date = b.modified_date,
+   preferred_date = b.preferred_date,
+   department = department == null ? null : new DepartmentDtos
+   {
+     id = department.id,
+     department_name = department.department_name,
+     is_active = department.is_active
+   },
+
+   Status = status == null ? null : new StatusesDtos
+   {
+     id = status.id,
+     status = status.status,
+     is_active = status.is_active
+   }
+ }
+).Where(d => d.assign_to == userid).ToListAsync();
+
+      return allBookings;
     }
   }
 }
