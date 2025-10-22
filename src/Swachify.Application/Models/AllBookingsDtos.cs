@@ -6,7 +6,7 @@ public class AllBookingsDtos
 {
     public long id { get; set; }
 
-    public string? booking_id { get; set; }
+    // public string? booking_id { get; set; }
 
     public long dept_id { get; set; }
 

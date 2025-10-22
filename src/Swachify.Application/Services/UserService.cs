@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Swachify.Application.DTOs;
 using Swachify.Infrastructure.Data;
 using Swachify.Infrastructure.Models;
@@ -99,50 +100,81 @@ public class UserService(MyDbContext db, IPasswordHasher hasher) : IUserService
         return userResult;
     }
 
-    public async Task<long> CreateEmployeAsync(EmpCommandDto cmd, CancellationToken ct = default)
-    {
-        if (await db.user_registrations.AnyAsync(u => u.email == cmd.email, ct))
-            throw new InvalidOperationException("Email exists");
+public async Task<long> CreateEmployeAsync(EmpCommandDto cmd, CancellationToken ct = default)
+{
+    if (cmd == null) throw new ArgumentNullException(nameof(cmd));
+    ct.ThrowIfCancellationRequested();
+
+    if (string.IsNullOrWhiteSpace(cmd.email))
+        throw new ArgumentException("Email is required", nameof(cmd.email));
+
+    if (await db.user_registrations.AnyAsync(u => u.email == cmd.email, ct))
+        throw new InvalidOperationException("Email exists");
         long userid = await db.user_registrations.MaxAsync(u => (long?)u.id) ?? 0L;
+        userid = userid + 1;
+    var user = new user_registration
+    {
+        id=userid,
+        email = cmd.email,
+        first_name = cmd.first_name,
+        last_name = cmd.last_name,
+        mobile = cmd.mobile,
+        role_id = 3,
+        location_id = cmd.location_id,
+    };
 
-        var user = new user_registration
+    await using var tx = await db.Database.BeginTransactionAsync(ct);
+
+    try
+    {
+        await db.user_registrations.AddAsync(user, ct);
+        await db.SaveChangesAsync(ct); 
+
+        if (cmd.dept_id != null && cmd.dept_id.Any())
         {
-            id = userid + 1,
-            email = cmd.email,
-            first_name = cmd.first_name,
-            last_name = cmd.last_name,
-            mobile = cmd.mobile,
-            role_id = 3,
-            location_id = cmd.location_id
-        };
-        await db.user_registrations.AddAsync(user);
-
-        cmd.dept_id.ForEach(async d =>
-        {
-            long id = await db.user_departments.MaxAsync(u => (long?)u.id) ?? 0L;
-
-            var userdept = new user_department
+            var userDeptList = new List<user_department>(cmd.dept_id.Count);
+            foreach (var d in cmd.dept_id)
             {
-                id = id + 1,
-                user_id = userid,
-                dept_id = d
-            };
-            await db.user_departments.AddAsync(userdept);
-        });
+                userDeptList.Add(new user_department
+                {
+                    user_id = userid,
+                    dept_id = d
+                });
+            }
 
-        long user_auth_id = await db.user_auths.MaxAsync(u => (long?)u.id) ?? 0L;
+            if (userDeptList.Count > 0)
+            {
+                await db.user_departments.AddRangeAsync(userDeptList, ct);
+            }
+        }
 
-        var user_auth = new user_auth
+        var userAuth = new user_auth
         {
-            id = user_auth_id + 1,
-            user_id = user.id,
+            id=userid,
+            user_id = userid,
             email = cmd.email,
-            password = hasher.Hash("Indian@123")
+            password = hasher.Hash(cmd.email) 
         };
-        await db.user_auths.AddAsync(user_auth);
-        await db.SaveChangesAsync(ct);
+
+        await db.user_auths.AddAsync(userAuth, ct);
+
+        await db.SaveChangesAsync();
+
+        await tx.CommitAsync(ct);
+
         return user.id;
     }
+    catch (DbUpdateException dbEx)
+    {
+        if (dbEx.InnerException is PostgresException pgEx && pgEx.SqlState == "23505")
+        {
+            throw new InvalidOperationException("Email already exists (unique constraint)", dbEx);
+        }
+
+        throw;
+    }
+}
+
 
     public async Task<bool> AssignEmployee(long id, long user_id)
     {

@@ -45,7 +45,6 @@ namespace Swachify.Application.Services
           select new AllBookingsDtos
           {
             id = b.id,
-            booking_id = b.booking_id,
             address = b.address,
             assign_to = b.assign_to,
    assign_to_name = assignUser != null ? assignUser.first_name + " " + assignUser.last_name : null,
@@ -235,7 +234,6 @@ namespace Swachify.Application.Services
  select new AllBookingsDtos
  {
    id = b.id,
-   booking_id = b.booking_id,
    address = b.address,
    assign_to = b.assign_to,
    assign_to_name = assignUser != null ? assignUser.first_name + " " + assignUser.last_name : null,
