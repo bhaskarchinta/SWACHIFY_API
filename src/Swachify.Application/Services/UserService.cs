@@ -196,7 +196,7 @@ public async Task<long> CreateEmployeAsync(EmpCommandDto cmd, CancellationToken 
         .Replace("{3}", location?.location_name);
         if (mailtemplate != null)
         {
-            await email.SendEmailAsync(customer.email, AppConstants.CustomerAssignedAgent, emailBody);
+            await email.SendEmailAsync(existing.email, AppConstants.CustomerAssignedAgent, emailBody);
         }
         var agentmailtemplate = await db.booking_templates.FirstOrDefaultAsync(b => b.title == AppConstants.EMPAssignmentMail);
         string agentEmailBody = agentmailtemplate?.description.ToString()
@@ -209,7 +209,7 @@ public async Task<long> CreateEmployeAsync(EmpCommandDto cmd, CancellationToken 
 
         if (mailtemplate != null)
         {
-            await email.SendEmailAsync(customer.email, AppConstants.EMPAssignmentMail, emailBody);
+            await email.SendEmailAsync(agent.email, AppConstants.EMPAssignmentMail, emailBody);
         }
         return true;
     }

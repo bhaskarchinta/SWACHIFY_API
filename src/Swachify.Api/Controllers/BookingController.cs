@@ -116,5 +116,25 @@ namespace Swachify.Api.Controllers
 
             return NoContent();
         }
+
+        [HttpPut("UpdateTicketByEmployeeCompleted/{id:long}")]
+        public async Task<ActionResult> UpdateTicketByEmployeeCompleted(long id)
+        {
+            var updated = await _bookingService.UpdateTicketByEmployeeCompleted(id);
+            if (!updated) return NotFound();
+
+            return NoContent();
+        }
+        
+         [HttpPut("UpdateTicketByEmployeeInprogress/{id:long}")]
+        public async Task<ActionResult> UpdateTicketByEmployeeInprogress(long id)
+        {
+            var updated = await _bookingService.UpdateTicketByEmployeeInprogress(id);
+            
+            if (!updated) return NotFound();
+
+            return NoContent();
+        }
+
     }
 }

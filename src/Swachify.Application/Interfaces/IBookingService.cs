@@ -12,5 +12,7 @@ namespace Swachify.Application.Interfaces
         Task<long> CreateAsync(service_booking booking, CancellationToken ct = default);
         Task<bool> UpdateAsync(long id, service_booking updatedBooking, CancellationToken ct = default);
         Task<bool> DeleteAsync(long id, CancellationToken ct = default);
+        Task<bool> UpdateTicketByEmployeeCompleted(long id);
+        Task<bool> UpdateTicketByEmployeeInprogress(long id);
     }
 }

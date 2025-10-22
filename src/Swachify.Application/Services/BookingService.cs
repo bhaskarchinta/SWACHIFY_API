@@ -47,7 +47,7 @@ namespace Swachify.Application.Services
             id = b.id,
             address = b.address,
             assign_to = b.assign_to,
-   assign_to_name = assignUser != null ? assignUser.first_name + " " + assignUser.last_name : null,
+            assign_to_name = assignUser != null ? assignUser.first_name + " " + assignUser.last_name : null,
             created_by = b.created_by,
             created_by_name = user != null ? user.first_name + " " + user.last_name : null,
             created_date = b.created_date,
@@ -116,7 +116,7 @@ namespace Swachify.Application.Services
         .Replace("{1}", booking?.id.ToString());
         if (mailtemplate != null)
         {
-            await _emailService.SendEmailAsync(booking.email, subject, emailBody);
+          await _emailService.SendEmailAsync(booking.email, subject, emailBody);
         }
       }
       return booking.id;
@@ -210,6 +210,36 @@ namespace Swachify.Application.Services
 ).Where(d => d.assign_to == userid).ToListAsync();
 
       return allBookings;
+    }
+
+    public async Task<bool> UpdateTicketByEmployeeInprogress(long id)
+    {
+      var existing = await _db.service_bookings.FirstOrDefaultAsync(b => b.id == id);
+      if (existing == null) return false;
+      existing.status_id = 3;
+      await _db.SaveChangesAsync();
+      return true;
+    }
+
+    public async Task<bool> UpdateTicketByEmployeeCompleted(long id)
+    {
+      var existing = await _db.service_bookings.FirstOrDefaultAsync(b => b.id == id);
+      if (existing == null) return false;
+      existing.status_id = 4;
+      await _db.SaveChangesAsync();
+      var subject = $"Your Cleaning Service Is Completed!";
+      var mailtemplate = await _db.booking_templates.FirstOrDefaultAsync(b => b.title == AppConstants.CustomerAssignMail);
+      var customer = await _db.user_registrations.FirstOrDefaultAsync(db => db.id == existing.created_by);
+
+      string emailBody = mailtemplate.description
+      .Replace("{0}", customer?.first_name + " " + customer?.last_name);
+
+      if (mailtemplate != null)
+      {
+        await _emailService.SendEmailAsync(existing.email, subject, emailBody);
+      }
+
+      return true;
     }
   }
 }
