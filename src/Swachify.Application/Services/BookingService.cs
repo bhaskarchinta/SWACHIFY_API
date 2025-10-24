@@ -105,6 +105,7 @@ namespace Swachify.Application.Services
       booking.email = booking.email;
       booking.service_id=booking.service_id;
       booking.status_id = 1;
+      
       _db.service_bookings.Add(booking);
       await _db.SaveChangesAsync(ct);
 
